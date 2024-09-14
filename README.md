@@ -12,5 +12,5 @@ Should be runned under root or sudo.
 
 ## Usage
 Simply call  
-`curl -sSL https://raw.githubusercontent.com/danis-devaccount/3x-ui-autodeploy/main/3x-ui-autodeploy.sh | bash`  
+`curl -sSL https://raw.githubusercontent.com/danis-devaccount/3x-ui-autodeploy/main/script.sh | bash`  
 Watch for the process and when it's finished you can use the URL and credentials that should be displayed.
