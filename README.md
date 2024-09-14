@@ -5,7 +5,7 @@ This script allows to automatically deploy the [3x-ui panel](https://github.com/
 ## Prerequisites
 Debian 11 or upper  
 or Ubuntu 22.04 LTS or upper  
-or CentOS 8 or upper
+or CentOS 9
 
 And installed curl and bash.  
 Should be runned under root or sudo.
