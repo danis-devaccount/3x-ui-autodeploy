@@ -85,6 +85,7 @@ docker exec 3x-ui sh -c "
     apk add sqlite apache2-utils &&
     HASH=\$(htpasswd -bnBC 10 \"\" \"$PANEL_PASSWORD\" | tr -d ':\n') &&
     sqlite3 /etc/x-ui/x-ui.db <<EOF
+DELETE FROM settings WHERE key IN ('webCertFile', 'webKeyFile', 'webBasePath', 'webPort', 'secret');
 INSERT INTO settings(key, value) VALUES ('webCertFile', '/root/cert/cert.pem');
 INSERT INTO settings(key, value) VALUES ('webKeyFile', '/root/cert/key.pem');
 INSERT INTO settings(key, value) VALUES ('webBasePath', '$PANEL_PATH');
