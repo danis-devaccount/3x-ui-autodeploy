@@ -83,13 +83,14 @@ docker compose -f "$PANEL_DIR/docker-compose.yml" up -d
 docker exec 3x-ui sh -c "
     apk update &&
     apk upgrade &&
-    apk add sqlite &&
+    apk add sqlite apache2-utils &&
+    PWD_HASH=htpasswd -bnBC 10 \"\" \"$PANEL_PASSWORD\" | tr -d ':\n'
     sqlite3 /etc/x-ui/x-ui.db <<EOF
 INSERT INTO settings(key, value) VALUES ('webCertFile', '/root/cert/cert.pem');
 INSERT INTO settings(key, value) VALUES ('webKeyFile', '/root/cert/key.pem');
 INSERT INTO settings(key, value) VALUES ('webBasePath', '$PANEL_PATH');
 INSERT INTO settings(key, value) VALUES ('webPort', '$PANEL_PORT');
-UPDATE users SET password='$PANEL_PASSWORD' WHERE username='admin';
+UPDATE users SET password='\$PWD_HASH' WHERE username='admin';
 EOF
 "
 
