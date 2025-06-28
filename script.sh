@@ -1,12 +1,6 @@
 #!/bin/bash
 
 PANEL_DIR="$HOME/3x-ui"
-EXTERNAL_IP=$(curl -s ifconfig.me)
-
-if [ -z "$EXTERNAL_IP" ]; then
-    echo "Не удалось получить внешний IP-адрес."
-    exit 1
-fi
 
 if [ -f /etc/os-release ]; then
     . /etc/os-release
@@ -54,6 +48,12 @@ systemctl enable docker
 docker --version
 
 echo "Docker установлен и запущен."
+EXTERNAL_IP=$(curl -s ifconfig.me)
+
+if [ -z "$EXTERNAL_IP" ]; then
+    echo "Не удалось получить внешний IP-адрес."
+    exit 1
+fi
 
 if [ ! -d "$PANEL_DIR" ]; then
     mkdir -p "$PANEL_DIR"
