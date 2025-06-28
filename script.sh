@@ -59,14 +59,12 @@ if [ ! -d "$PANEL_DIR" ]; then
     mkdir -p "$PANEL_DIR"
 fi
 
-curl -o "$PANEL_DIR/docker-compose.yml" "https://raw.githubusercontent.com/MHSanaei/3x-ui/main/docker-compose.yml"
+curl -o "$PANEL_DIR/docker-compose.yml" "https://raw.githubusercontent.com/danis-devaccount/3x-ui-autodeploy/main/docker-compose.yaml"
 
 if [ ! -f "$PANEL_DIR/docker-compose.yml" ]; then
     echo "Не удалось скачать файл docker-compose.yml для панели."
     exit 1
 fi
-
-sed -i '/^  3xui:$/a\    image: ghcr.io/mhsanaei/3x-ui:latest' "$PANEL_DIR/docker-compose.yml"
 
 generate_random_string() {
     tr -dc A-Za-z0-9 </dev/urandom | head -c 16
@@ -76,23 +74,22 @@ PANEL_PORT=$((10000 + RANDOM % 55536))
 PANEL_PASSWORD=$(generate_random_string)
 PANEL_PATH="/$(generate_random_string)/"
 
-mkdir -p "$PANEL_DIR/cert"
-openssl req -x509 -newkey rsa:4096 -keyout "$PANEL_DIR/cert/key.pem" -out "$PANEL_DIR/cert/cert.pem" -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=CommonNameOrHostname"
-sed -i 's|\$PWD|./|g' "$PANEL_DIR/docker-compose.yml"
+mkdir -p "$PANEL_DIR/volumes/cert"
+openssl req -x509 -newkey rsa:4096 -keyout "$PANEL_DIR/volumes/cert/key.pem" -out "$PANEL_DIR/volumes/cert/cert.pem" -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=CommonNameOrHostname"
 
 docker compose -f "$PANEL_DIR/docker-compose.yml" pull
 docker compose -f "$PANEL_DIR/docker-compose.yml" up -d
-docker exec 3xui_app sh -c "
+docker exec 3x-ui sh -c "
     apk update &&
     apk upgrade &&
     apk add sqlite apache2-utils &&
-    PWD_HASH=htpasswd -bnBC 10 \"\" \"$PANEL_PASSWORD\" | tr -d ':\n'
+    HASH=\$(htpasswd -bnBC 10 \"\" \"$PANEL_PASSWORD\" | tr -d ':\n') &&
     sqlite3 /etc/x-ui/x-ui.db <<EOF
 INSERT INTO settings(key, value) VALUES ('webCertFile', '/root/cert/cert.pem');
 INSERT INTO settings(key, value) VALUES ('webKeyFile', '/root/cert/key.pem');
 INSERT INTO settings(key, value) VALUES ('webBasePath', '$PANEL_PATH');
 INSERT INTO settings(key, value) VALUES ('webPort', '$PANEL_PORT');
-UPDATE users SET password='\$PWD_HASH' WHERE username='admin';
+UPDATE users SET password='\$HASH' WHERE username='admin';
 EOF
 "
 
