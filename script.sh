@@ -66,7 +66,7 @@ if [ ! -f "$PANEL_DIR/docker-compose.yml" ]; then
     exit 1
 fi
 
-sed -i '/^[[:space:]]*3xui:$/a\    image: ghcr.io/mhsanaei/3x-ui:latest' "$PANEL_DIR/docker-compose.yml"
+sed -i '/^  3xui:$/a\    image: ghcr.io/mhsanaei/3x-ui:latest' "$PANEL_DIR/docker-compose.yml"
 
 generate_random_string() {
     tr -dc A-Za-z0-9 </dev/urandom | head -c 16
@@ -82,7 +82,7 @@ sed -i 's|\$PWD|./|g' "$PANEL_DIR/docker-compose.yml"
 
 docker compose -f "$PANEL_DIR/docker-compose.yml" pull
 docker compose -f "$PANEL_DIR/docker-compose.yml" up -d
-docker exec 3x-ui sh -c "
+docker exec 3xui_app sh -c "
     apk update &&
     apk upgrade &&
     apk add sqlite apache2-utils &&
