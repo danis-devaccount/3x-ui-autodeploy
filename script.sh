@@ -66,7 +66,7 @@ if [ ! -f "$PANEL_DIR/docker-compose.yml" ]; then
     exit 1
 fi
 
-sed -i '/^[[:space:]]*3xui:$/a\    image: ghcr.io/mhsanaei/3x-ui:latest' файл.yaml
+sed -i '/^[[:space:]]*3xui:$/a\    image: ghcr.io/mhsanaei/3x-ui:latest' "$PANEL_DIR/docker-compose.yml"
 
 generate_random_string() {
     tr -dc A-Za-z0-9 </dev/urandom | head -c 16
